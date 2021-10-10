@@ -30,33 +30,33 @@ library(tidyverse)
 Let's explore the datasets
 
 ```{r}
-dim(steam_games)
-glimpse(steam_games)
-class(steam_games)
+dim(steam_games) #look at the dimension
+glimpse(steam_games) #having a glimpse of what is in the data set
+class(steam_games) #knowing what kind of data set it is
 ```
 
 For this data set, the fact that there is the price as well as chain of characters variables is interesting for data exploring, and it is a tibble, making it easy to analyze
 
 ```{r}
-dim(cancer_sample)
-glimpse(cancer_sample)
-class(cancer_sample)
+dim(cancer_sample) #look at the dimension
+glimpse(cancer_sample) #having a glimpse of what is in the data set
+class(cancer_sample) #knowing what kind of data set it is
 ```
 
-This data set is interesting, as all of the variables are numerical, the dimensions are not that big and it is a tibble
+This data set is interesting, as all of the variables are numerical, allowing a lot of correlation, the dimensions are not that big and it is a tibble
 
 ```{r}
-dim(vancouver_trees)
-glimpse(vancouver_trees)
-class(vancouver_trees)
+dim(vancouver_trees) #look at the dimension
+glimpse(vancouver_trees) #having a glimpse of what is in the data set
+class(vancouver_trees) #knowing what kind of data set it is
 ```
 
 For this data set, several variables are numeric which is good to do analysis, it is a tibble and it has the neighborhood name
 
 ```{r}
-dim(apt_buildings)
-glimpse(apt_buildings)
-class(apt_buildings)
+dim(apt_buildings) #look at the dimension
+glimpse(apt_buildings) #having a glimpse of what is in the data set
+class(apt_buildings) #knowing what kind of data set it is
 ```
 
 This data set is also a tibble, with some numerical variable that can be exploit and it is not that big. 
@@ -65,7 +65,7 @@ This data set is also a tibble, with some numerical variable that can be exploit
 
 Based on the exploration before, the 2 data sets that seem the most promising are *cancer_samples* and *steam_games*
 
-* vancouver_trees: there is a lot of numerical variables as well as chains of characters, which analysis possible, not just correlation between numerical variable
+* vancouver_trees: there are some numerical variables as well as chains of characters, which increase the number analysis possible, not just correlation between numerical variable
 * steam_games: this data set is interesting explore some relation between prices and genre of the game, in order to use not just numerical variable, but also chains of characters. And I love video games x)
 
 **4. Final decision**
@@ -77,14 +77,16 @@ For the *vancouver_trees*, I am going to explore the relation between physiologi
 
 Let's dive in the *vancouver_trees* data set to see what is interesting to study! 
 
-* Exercise 2
+* Exercise 1
 
 ````{r}
 vancouver_trees%>%
-  mutate(age = difftime(Sys.Date(), date_planted, units = "days")) ## adding a column with the age of each trees (in days)
+  filter(diameter < 60)%>% #Filtering to have a better view as most of the diameter are below 60
+  ggplot(aes(diameter, height_range_id)) + #plotting the distribution of the height depending of the diameter
+  geom_point(alpha = 0.1) #making the points a bit transparent to have a better view
 ````
 
-I chose this exercise because I wanted to know the age of each trees, to make correlation between this and other numerical variable such as the **diameter** of the **height_range_id**, or even any other variable.
+I chose this exercise because I wanted to see the distribution of the height depending on the diameter, as it is 2 numerical variables from the data set related to the physiology of the trees
 
 * Exercise 7
 
@@ -92,9 +94,9 @@ I chose this exercise because I wanted to know the age of each trees, to make co
 vancouver_trees%>%
   group_by(neighbourhood_name)%>%
   summarise(n = n())%>% # I want to store the number of trees for each neighborhood
-  ggplot(aes(neighbourhood_name,n)) +
+  ggplot(aes(neighbourhood_name,n)) + #plotting the number of trees per neighborhood
   geom_col() +
-  coord_flip() # I use the tibble created before to see the number of trees per neighborhood
+  coord_flip() # I had this line after realizing it was better to visualize
 ```
 
 I chose this exercise because I found it interesting to determine the number of trees per neighborhood, it's a relation that can be useful in the future. I could have use the streets or the blocks, but for me it makes more sense to look at the neighborhoods because there is certainly an inner tree politic per neighborhood, and not per street
@@ -125,16 +127,16 @@ For this last one, I wanted to check the relation between the diameter of trees 
 
 * Question 1
 
-What is the evolution of trees plantation with the years? Indeed, by filtering with the year, I notice that I decreased the number of rows by 10, which may suggest a potential increase in the number of trees planted
+What is the evolution of trees plantation with the years? Indeed, by filtering with the year, I notice that I decreased the number of rows by 10, which may suggest a potential increase in the number of trees planted. This question can be extended to each neighborhood as variability in the number of trees per neighborhood was found
 
 * Question 2
 
-How evolved the number of trees per neighborhood with the years? Indeed, we can see variabilities in the number of trees per neighborhood, but how did this evolve with time? 
+With the variability in the number of trees per neighborhood, can we also find some prevalence in some species for each neighborhood?
 
 * Question 3
 
-With the variability in the number of trees per neighborhood, can we also find some prevalence in some species for each neighborhood? 
+Is there a trend in the type of trees that are planted over the years? 
 
 * Question 4
 
-Is there a relation between the age of the tree (the year) and the species of the tree? So in other word, is there a trend in the type of trees that are planted over the years? 
+Is there an evolution of the physiological properties of the trees (diameter and height), depending on the year? Are these properties related to any other variables of the tibble?

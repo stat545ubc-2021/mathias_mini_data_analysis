@@ -24,13 +24,13 @@ packages *datateachr* and *tidyverse* for data exploration
 Let’s explore the datasets
 
 ``` r
-dim(steam_games)
+dim(steam_games) #look at the dimension
 ```
 
     ## [1] 40833    21
 
 ``` r
-glimpse(steam_games)
+glimpse(steam_games) #having a glimpse of what is in the data set
 ```
 
     ## Rows: 40,833
@@ -58,7 +58,7 @@ glimpse(steam_games)
     ## $ discount_price           <dbl> 14.99, NA, NA, NA, NA, 35.18, 70.42, 17.58, N…
 
 ``` r
-class(steam_games)
+class(steam_games) #knowing what kind of data set it is
 ```
 
     ## [1] "spec_tbl_df" "tbl_df"      "tbl"         "data.frame"
@@ -68,13 +68,13 @@ characters variables is interesting for data exploring, and it is a
 tibble, making it easy to analyze
 
 ``` r
-dim(cancer_sample)
+dim(cancer_sample) #look at the dimension
 ```
 
     ## [1] 569  32
 
 ``` r
-glimpse(cancer_sample)
+glimpse(cancer_sample) #having a glimpse of what is in the data set
 ```
 
     ## Rows: 569
@@ -113,22 +113,23 @@ glimpse(cancer_sample)
     ## $ fractal_dimension_worst <dbl> 0.11890, 0.08902, 0.08758, 0.17300, 0.07678, 0…
 
 ``` r
-class(cancer_sample)
+class(cancer_sample) #knowing what kind of data set it is
 ```
 
     ## [1] "spec_tbl_df" "tbl_df"      "tbl"         "data.frame"
 
-This data set is interesting, as all of the variables are numerical, the
-dimensions are not that big and it is a tibble
+This data set is interesting, as all of the variables are numerical,
+allowing a lot of correlation, the dimensions are not that big and it is
+a tibble
 
 ``` r
-dim(vancouver_trees)
+dim(vancouver_trees) #look at the dimension
 ```
 
     ## [1] 146611     20
 
 ``` r
-glimpse(vancouver_trees)
+glimpse(vancouver_trees) #having a glimpse of what is in the data set
 ```
 
     ## Rows: 146,611
@@ -155,7 +156,7 @@ glimpse(vancouver_trees)
     ## $ latitude           <dbl> 49.21776, 49.21776, 49.23938, 49.23469, 49.23894, 4…
 
 ``` r
-class(vancouver_trees)
+class(vancouver_trees) #knowing what kind of data set it is
 ```
 
     ## [1] "tbl_df"     "tbl"        "data.frame"
@@ -164,13 +165,13 @@ For this data set, several variables are numeric which is good to do
 analysis, it is a tibble and it has the neighborhood name
 
 ``` r
-dim(apt_buildings)
+dim(apt_buildings) #look at the dimension
 ```
 
     ## [1] 3455   37
 
 ``` r
-glimpse(apt_buildings)
+glimpse(apt_buildings) #having a glimpse of what is in the data set
 ```
 
     ## Rows: 3,455
@@ -214,7 +215,7 @@ glimpse(apt_buildings)
     ## $ no_barrier_free_accessible_units <dbl> 2, 0, 0, 42, 0, NA, 14, 0, 0, 1, 25, …
 
 ``` r
-class(apt_buildings)
+class(apt_buildings) #knowing what kind of data set it is
 ```
 
     ## [1] "tbl_df"     "tbl"        "data.frame"
@@ -227,9 +228,9 @@ exploit and it is not that big.
 Based on the exploration before, the 2 data sets that seem the most
 promising are *cancer_samples* and *steam_games*
 
--   vancouver_trees: there is a lot of numerical variables as well as
-    chains of characters, which analysis possible, not just correlation
-    between numerical variable
+-   vancouver_trees: there are some numerical variables as well as
+    chains of characters, which increase the number analysis possible,
+    not just correlation between numerical variable
 -   steam_games: this data set is interesting explore some relation
     between prices and genre of the game, in order to use not just
     numerical variable, but also chains of characters. And I love video
@@ -250,35 +251,20 @@ other variables, such as the location or the type of tree.
 Let’s dive in the *vancouver_trees* data set to see what is interesting
 to study!
 
--   Exercise 2
+-   Exercise 1
 
 ``` r
 vancouver_trees%>%
-  mutate(age = difftime(Sys.Date(), date_planted, units = "days")) ## adding a column with the age of each trees (in days)
+  filter(diameter < 60)%>% #Filtering to have a better view as most of the diameter are below 60
+  ggplot(aes(diameter, height_range_id)) + #plotting the distribution of the height depending of the diameter
+  geom_point(alpha = 0.1) #making the points a bit transparent to have a better view
 ```
 
-    ## # A tibble: 146,611 × 21
-    ##    tree_id civic_number std_street    genus_name species_name cultivar_name  
-    ##      <dbl>        <dbl> <chr>         <chr>      <chr>        <chr>          
-    ##  1  149556          494 W 58TH AV     ULMUS      AMERICANA    BRANDON        
-    ##  2  149563          450 W 58TH AV     ZELKOVA    SERRATA      <NA>           
-    ##  3  149579         4994 WINDSOR ST    STYRAX     JAPONICA     <NA>           
-    ##  4  149590          858 E 39TH AV     FRAXINUS   AMERICANA    AUTUMN APPLAUSE
-    ##  5  149604         5032 WINDSOR ST    ACER       CAMPESTRE    <NA>           
-    ##  6  149616          585 W 61ST AV     PYRUS      CALLERYANA   CHANTICLEER    
-    ##  7  149617         4909 SHERBROOKE ST ACER       PLATANOIDES  COLUMNARE      
-    ##  8  149618         4925 SHERBROOKE ST ACER       PLATANOIDES  COLUMNARE      
-    ##  9  149619         4969 SHERBROOKE ST ACER       PLATANOIDES  COLUMNARE      
-    ## 10  149625          720 E 39TH AV     FRAXINUS   AMERICANA    AUTUMN APPLAUSE
-    ## # … with 146,601 more rows, and 15 more variables: common_name <chr>,
-    ## #   assigned <chr>, root_barrier <chr>, plant_area <chr>,
-    ## #   on_street_block <dbl>, on_street <chr>, neighbourhood_name <chr>,
-    ## #   street_side_name <chr>, height_range_id <dbl>, diameter <dbl>, curb <chr>,
-    ## #   date_planted <date>, longitude <dbl>, latitude <dbl>, age <drtn>
+![](Minidata_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
-I chose this exercise because I wanted to know the age of each trees, to
-make correlation between this and other numerical variable such as the
-**diameter** of the **height_range_id**, or even any other variable.
+I chose this exercise because I wanted to see the distribution of the
+height depending on the diameter, as it is 2 numerical variables from
+the data set related to the physiology of the trees
 
 -   Exercise 7
 
@@ -286,9 +272,9 @@ make correlation between this and other numerical variable such as the
 vancouver_trees%>%
   group_by(neighbourhood_name)%>%
   summarise(n = n())%>% # I want to store the number of trees for each neighborhood
-  ggplot(aes(neighbourhood_name,n)) +
+  ggplot(aes(neighbourhood_name,n)) + #plotting the number of trees per neighborhood
   geom_col() +
-  coord_flip() # I use the tibble created before to see the number of trees per neighborhood
+  coord_flip() # I had this line after realizing it was better to visualize
 ```
 
 ![](Minidata_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
@@ -355,21 +341,20 @@ the growth of the tree.
 What is the evolution of trees plantation with the years? Indeed, by
 filtering with the year, I notice that I decreased the number of rows by
 10, which may suggest a potential increase in the number of trees
-planted
+planted. This question can be extended to each neighborhood as
+variability in the number of trees per neighborhood was found
 
 -   Question 2
-
-How evolved the number of trees per neighborhood with the years? Indeed,
-we can see variabilities in the number of trees per neighborhood, but
-how did this evolve with time?
-
--   Question 3
 
 With the variability in the number of trees per neighborhood, can we
 also find some prevalence in some species for each neighborhood?
 
+-   Question 3
+
+Is there a trend in the type of trees that are planted over the years?
+
 -   Question 4
 
-Is there a relation between the age of the tree (the year) and the
-species of the tree? So in other word, is there a trend in the type of
-trees that are planted over the years?
+Is there an evolution of the physiological properties of the trees
+(diameter and height), depending on the year? Are these properties
+related to any other variables of the tibble?
