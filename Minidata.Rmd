@@ -1,7 +1,7 @@
 ---
 title: "Mini data analysis"
 author: "Mathias Delhaye"
-output: html_document
+output: github_document
 ---
 
 # Introduction
