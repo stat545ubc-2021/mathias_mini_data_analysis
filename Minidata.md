@@ -359,7 +359,7 @@ Is there an evolution of the physiological properties of the trees
 (diameter and height), depending on the year? Are these properties
 related to any other variables of the tibble?
 
-#Comments
+# Comments
 
 The questions I figured out seem a bit not enough for me, I have the
 feeling they are too simple, not deep enought for this analysis.
