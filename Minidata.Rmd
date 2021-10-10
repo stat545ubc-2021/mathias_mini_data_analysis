@@ -1,0 +1,140 @@
+---
+title: "Mini data analysis"
+author: "Mathias Delhaye"
+output: html_document
+---
+
+# Introduction
+After installing the *datateachr* package in the R terminal, load the packages *datateachr* and *tidyverse* for data exploration 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(datateachr)
+library(tidyverse)
+```
+
+# Task1: choosing my favorite dataset
+
+**1. Choosing 4 data sets based on their descrition**
+
+1: *steam_games*
+
+2: *cancer_sample*
+
+3: *vancouver_trees*
+
+4: *apt_buildings*
+
+**2. Exploring the data sets**
+
+Let's explore the datasets
+
+```{r}
+dim(steam_games)
+glimpse(steam_games)
+class(steam_games)
+```
+
+For this data set, the fact that there is the price as well as chain of characters variables is interesting for data exploring, and it is a tibble, making it easy to analyze
+
+```{r}
+dim(cancer_sample)
+glimpse(cancer_sample)
+class(cancer_sample)
+```
+
+This data set is interesting, as all of the variables are numerical, the dimensions are not that big and it is a tibble
+
+```{r}
+dim(vancouver_trees)
+glimpse(vancouver_trees)
+class(vancouver_trees)
+```
+
+For this data set, several variables are numeric which is good to do analysis, it is a tibble and it has the neighborhood name
+
+```{r}
+dim(apt_buildings)
+glimpse(apt_buildings)
+class(apt_buildings)
+```
+
+This data set is also a tibble, with some numerical variable that can be exploit and it is not that big. 
+
+**3. Narrowing down to 2**
+
+Based on the exploration before, the 2 data sets that seem the most promising are *cancer_samples* and *steam_games*
+
+* vancouver_trees: there is a lot of numerical variables as well as chains of characters, which analysis possible, not just correlation between numerical variable
+* steam_games: this data set is interesting explore some relation between prices and genre of the game, in order to use not just numerical variable, but also chains of characters. And I love video games x)
+
+**4. Final decision**
+
+I am going to choose the *vancouver_trees* data set, as it presents variables that are numerical and chains of character that are short and simple to analyze, contrary to *steam-games*, that presents few numerical variable and the **chr** variables are very complex. 
+For the *vancouver_trees*, I am going to explore the relation between physiological data of the trees (*diameter* and *height_range_id*) and other variables, such as the location or the type of tree. 
+
+# Task2 exploring the chosen dataset
+
+Let's dive in the *vancouver_trees* data set to see what is interesting to study! 
+
+* Exercise 2
+
+````{r}
+vancouver_trees%>%
+  mutate(age = difftime(Sys.Date(), date_planted, units = "days")) ## adding a column with the age of each trees (in days)
+````
+
+I chose this exercise because I wanted to know the age of each trees, to make correlation between this and other numerical variable such as the **diameter** of the **height_range_id**, or even any other variable.
+
+* Exercise 7
+
+```{r}
+vancouver_trees%>%
+  group_by(neighbourhood_name)%>%
+  summarise(n = n())%>% # I want to store the number of trees for each neighborhood
+  ggplot(aes(neighbourhood_name,n)) +
+  geom_col() +
+  coord_flip() # I use the tibble created before to see the number of trees per neighborhood
+```
+
+I chose this exercise because I found it interesting to determine the number of trees per neighborhood, it's a relation that can be useful in the future. I could have use the streets or the blocks, but for me it makes more sense to look at the neighborhoods because there is certainly an inner tree politic per neighborhood, and not per street
+
+* Exercise 5 
+
+```{r}
+vancouver_trees%>%
+  mutate(year_planted = format(date_planted, "%Y")) %>% #creating a new column with just the year when each tree was planted
+  filter(year_planted<1996) #filtering to just take the trees planted before 1996
+```
+
+I chose this exercise because there is a lot of dates, and I wanted to filter by a year to restrain my analysis. Tt could be interesting to just look at some years, for example here before 1996. 
+
+By the way here, we can see that our tibble is 10,000 rows while the original one is more than 100,000, meaning that it seems that more trees were planted from 1996
+
+*Exercise 8
+
+```{r}
+vancouver_trees%>%
+  filter(diameter<50)%>% #filtering because I noticed most of the trees have a diameter below 50, and with this filter the visualization is better
+  ggplot(aes(x = diameter)) + 
+    geom_density(aes(fill = root_barrier), alpha = 0.3)
+```
+For this last one, I wanted to check the relation between the diameter of trees and if there were root barrier for the tree or not, which could affect the growth of the tree.
+
+# Task3: research questions
+
+* Question 1
+
+What is the evolution of trees plantation with the years? Indeed, by filtering with the year, I notice that I decreased the number of rows by 10, which may suggest a potential increase in the number of trees planted
+
+* Question 2
+
+How evolved the number of trees per neighborhood with the years? Indeed, we can see variabilities in the number of trees per neighborhood, but how did this evolve with time? 
+
+* Question 3
+
+With the variability in the number of trees per neighborhood, can we also find some prevalence in some species for each neighborhood? 
+
+* Question 4
+
+Is there a relation between the age of the tree (the year) and the species of the tree? So in other word, is there a trend in the type of trees that are planted over the years? 
