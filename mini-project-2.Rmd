@@ -42,10 +42,10 @@ From milestone 1, you should have an idea of the basic structure of your dataset
 First, write out the 4 research questions you defined in milestone 1 were. This will guide your work through milestone 2:
 
 <!-------------------------- Start your work below ---------------------------->
-1. *FILL_THIS_IN*
-2. *FILL_THIS_IN*
-3. *FILL_THIS_IN*
-4. *FILL_THIS_IN*
+1. *What is the evolution of trees plantation with the years?*
+2. *With the variability in the number of trees per neighborhood, can we also find some prevalence in some species for each neighborhood?*
+3. *Is there a trend in the type of trees that are planted over the years?*
+4. *Is there an evolution of the physiological properties of the trees (diameter and height), depending on the year? Are these properties related to any other variables of the tibble?*
 <!----------------------------------------------------------------------------->
 
 ### 1.2 (10 points)
@@ -71,7 +71,18 @@ Ensure that the output of each operation is printed!
 Make sure it's clear what research question you are doing each operation for!
 
 <!------------------------- Start your work below ----------------------------->
+*Question 1*
 
+```{r}
+
+
+```
+
+*Question 3*
+```{r}
+
+
+```
 
 <!----------------------------------------------------------------------------->
 
