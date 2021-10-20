@@ -92,6 +92,7 @@ vancouver_trees_yearcat <- vancouver_trees_year %>%
                                        year_planted<2010 ~ "2005-2009",
                                        year_planted<2015 ~ "2010-2015",
                                        TRUE ~ "2016-2019",))
+print(vancouver_trees_yearcat)
 
 ```
 
@@ -124,6 +125,7 @@ For this one, we can summarize by the neighborhood and the type (genus) of tree 
 vancouver_trees_neighborhood_genus <- vancouver_trees %>%
   group_by(neighbourhood_name, genus_name) %>%
   summarize(n = n(), min_id = min(tree_id), max_id = max(tree_id)) # I want to store the number of trees for each neighborhood
+print(vancouver_trees_neighborhood_genus)
 ```
 
 With this, we directly obtain the number of trees for each genus depending on the neighborhood, which almost answer the question. 
@@ -178,6 +180,7 @@ Let's deep into the diameter variable, by grouping the data by the genus of tree
 vancouver_trees_genus_statdiameter <- vancouver_trees%>%
   group_by(genus_name)%>% #grouping by the genus
   summarise(mean_diameter = mean(diameter), min_diameter = min(diameter), max_diameter = max(diameter), median_diameter = median(diameter), sd_diameter = sd(diameter)) #calculating statistical summaries
+print(vancouver_trees_genus_statdiameter)
 ```
 
 Looking at the tibble made, the diameter of trees varies a lot depending on the genus. 
@@ -185,7 +188,6 @@ Looking at the tibble made, the diameter of trees varies a lot depending on the 
 We can also look at the distribution of the diameter by selecting specific genus (here again the ones starting with an A). I use a logarithmic scale for it as well as I customize the alpha transparency to make it easier to read (**#6,7**)
 
 ```{r}
-
 vancouver_trees%>%
   filter(genus_name %in% c("ABIES", "AMELANCHIER", "ALNUS","ACER", "ARAUCARIA", "ARBUTUS", "ARALIA", "ALBIZIA", "AILANTHUS"))%>%
   ggplot(aes(x = diameter))+
@@ -248,17 +250,20 @@ Be sure to explain your reasoning for this task. Show us the "before" and "after
 untidy_vancouver_trees <- vancouver_trees %>%
   pivot_longer(cols = c(-tree_id, -civic_number, -std_street, -genus_name, -species_name, -cultivar_name, -common_name, -assigned, -root_barrier, -plant_area, -on_street_block, -on_street, -neighbourhood_name, -street_side_name, -curb, -date_planted, -longitude, -latitude), # select all the variable we want to keep
                names_to = "physiological_parameters", #gather the physiological parameter, height and diameter, in one variable
-               values_to = "physiological_value") #assigned variable to the value of this physiological data
+               values_to = "physiological_value")%>%#assigned variable to the value of this physiological data
+  select(tree_id, physiological_parameters, physiological_value, everything())
+print(untidy_vancouver_trees)
 ```
 
 Here I untidied the data, by gathering the height and the diameter together. 
 
 ```{r}
 tidy_untidy_vancouver_trees <- untidy_vancouver_trees %>%
-  pivot_wider(id_cols = c(-physiological_parameters, -physiological_data), #removing physiological_parameters and data
+  pivot_wider(id_cols = c(-physiological_parameters, -physiological_value), #removing physiological_parameters and data
               names_from = physiological_parameters, #extracting the names from physiological_parameters
-              values_from = physiological_data) #assigning values via physiological_data
-
+              values_from = physiological_value)%>% #assigning values via physiological_data
+  select(tree_id, height_range_id,diameter, everything())
+print(tidy_untidy_vancouver_trees)
 ```
 
 <!----------------------------------------------------------------------------->
@@ -280,6 +285,7 @@ finalversion_vancouver_trees <- vancouver_trees %>%
   mutate(year_planted = format(date_planted, "%Y"))%>% #adding the year planted
   arrange(genus_name, year_planted)%>% #re-ordering the data
   drop_na() #keeping only the rows without NA
+head(finalversion_vancouver_trees)
 ````
 
 <!----------------------------------------------------------------------------->
