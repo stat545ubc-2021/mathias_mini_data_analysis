@@ -1,5 +1,6 @@
 ---
 title: "Mini Data-Analysis Deliverable 3"
+author: "Mathias "
 output: html_document
 ---
 
@@ -39,8 +40,8 @@ library(tidyverse)
 From Milestone 2, you chose two research questions. What were they? Put them here.
 
 <!-------------------------- Start your work below ---------------------------->
-1. *FILL_THIS_IN*
-2. *FILL_THIS_IN*
+1. *Is there a trend in the type of trees that are planted over the years and per neighborhood?*
+2. *Is there an evolution of the physiological properties of the trees (diameter and height), depending on the year? Are these properties related to any other variables of the tibble?*
 <!----------------------------------------------------------------------------->
 
 
@@ -51,9 +52,14 @@ For this exercise, you'll be choosing two of the three tasks below -- both tasks
 But first, tasks 1 and 2 below ask you to modify a plot you made in a previous milestone. The plot you choose should involve plotting across at least three groups (whether by facetting, or using an aesthetic like colour). Place this plot below (you're allowed to modify the plot if you'd like). If you don't have such a plot, you'll need to make one. Place the code for your plot below.
 
 <!-------------------------- Start your work below ---------------------------->
+```{r}
+vancouver_trees%>%
+  filter(genus_name %in% c("ABIES", "AMELANCHIER", "ALNUS","ACER", "ARAUCARIA", "ARBUTUS", "ARALIA", "ALBIZIA", "AILANTHUS"))%>%
+  ggplot(aes(x = diameter))+
+  geom_density(aes(fill = genus_name), alpha = 0.3)+
+  scale_x_log10()
 
-
-
+```
 <!----------------------------------------------------------------------------->
 
 Now, choose two of the following tasks.
@@ -75,14 +81,18 @@ Now, choose two of the following tasks.
 
 **Task Number**: FILL_THIS_IN
 
+```{r}
+library(lubridate)
+vancouver_trees%>%
+  
 
-
+```
 <!----------------------------------------------------------------------------->
 
 
 <!-------------------------- Start your work below ---------------------------->
 
-**Task Number**: FILL_THIS_IN
+**Task Number**: 3
 
 
 
