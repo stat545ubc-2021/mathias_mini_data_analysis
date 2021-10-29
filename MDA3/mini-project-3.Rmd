@@ -1,7 +1,7 @@
 ---
 title: "Mini Data-Analysis Deliverable 3"
 author: "Mathias "
-output: html_document
+output: github_document
 ---
 
 
@@ -60,14 +60,14 @@ vancouver_trees_year <- vancouver_trees%>%
   mutate(year_planted = format(date_planted, "%Y"))
 
 vancouver_trees_year%>%
-  filter(year_planted == 1998)%>%
+  filter(year_planted == 1998)%>% #only keep year 1998 as it is the year with the most trees planted
   group_by(genus_name)%>%
-  summarise(n = n())%>%
-  drop_na()%>%
-  ggplot(aes(genus_name,n)) +
+  summarise(n = n())%>% #counting the number of trees planted for each genus
+  drop_na()%>% #getting ride of the NA
+  ggplot(aes(genus_name,n)) + #plotting number of trees planted by genus_name
   geom_point() +
-  theme(axis.text.y = element_text(size = 6)) +
-  coord_flip() +
+  coord_flip() + #flipping the coordinate to make it easier to read
+  theme(axis.text.y = element_text(size = 6)) + #reducing the size of the genus_name to make it easier to read
   labs(x = "", y = "Number of trees planted", title = "Genus trees, 1998")
 ```
 <!----------------------------------------------------------------------------->
@@ -83,15 +83,15 @@ Now, choose two of the following tasks.
 **Task Number**: 1
 ```{r}
 vancouver_trees_year%>%
-  filter(year_planted == 1998)%>%
+  filter(year_planted == 1998)%>% #only keep year 1998 as it is the year with the most trees planted
   group_by(genus_name)%>%
-  summarise(n = n())%>%
-  drop_na()%>%
-  mutate(genus_name = fct_reorder(genus_name, n))%>%
-  ggplot(aes(genus_name,n)) +
-  theme(axis.text.y = element_text(size = 6)) +
+  summarise(n = n())%>% #counting the number of trees planted for each genus
+  drop_na()%>% #getting ride of the NA
+  mutate(genus_name = fct_reorder(genus_name, n))%>% #reordering the genus_name by the number of trees planted
+  ggplot(aes(genus_name,n)) + #plotting number of trees planted by genus_name
   geom_point() +
-  coord_flip() +
+  coord_flip() + #flipping the coordinate to make it easier to read
+  theme(axis.text.y = element_text(size = 6)) + #reducing the size of the genus_name to make it easier to read
   labs(x = "", y = "Number of trees planted", title = "Genus trees, 1998")
   
 ```
@@ -110,10 +110,10 @@ In this plot, I reordered the genus of the trees depending on the number of tree
 **Task Number**: 3
 
 ```{r}
-library(lubridate)
+library(lubridate) #charging the lubridate package
 vancouver_trees_month <- vancouver_trees%>%
-  mutate(month_planted = month(date_planted))
-vancouver_trees_month$month_name <- month.name[vancouver_trees_month$month_planted]
+  mutate(month_planted = month(date_planted)) #adding a column containing the month for each plantation
+vancouver_trees_month$month_name <- month.name[vancouver_trees_month$month_planted] #adding a column using the newly created new column to have the name of the month 
 glimpse(vancouver_trees_month)
 ```
 
@@ -149,14 +149,14 @@ Fit a model or run a hypothesis test that provides insight on this variable with
 ```{r}
 vty_acer <- vancouver_trees_year%>%
   group_by(genus_name, year_planted)%>% #grouping by the genus and the year
-  filter(genus_name == "ACER")%>% #keep only ACER trees
+  filter(genus_name == "ACER")%>% #keep only ACER trees, as it is the most numerous
   drop_na()%>% #drop any NA
   summarise(mean_diameter = mean(diameter))#calculating mean diameter for each year
 #print(vty_acer)
 
-vty_acer$year_planted <- as.numeric(vty_acer$year_planted)
+vty_acer$year_planted <- as.numeric(vty_acer$year_planted) #changing the class of year, from chr to numeric
 
-model_vty_acer <- lm(mean_diameter ~ I(year_planted-1989), vty_acer)
+model_vty_acer <- lm(mean_diameter ~ I(year_planted-1989), vty_acer) #fitting a linear model to the data 
 
 print(model_vty_acer)
 
@@ -175,11 +175,13 @@ Produce something relevant from your fitted model: either predictions on Y, or a
 I want to predict the mean_diameter of the ACER trees that are going to be potentially planted in the future, using the fitted model obtained above.
 
 ```{r}
-prediction_vty_acer <- broom::augment(model_vty_acer) #use the augment function of broom package
-broom::
+futur_vty_acer <- tibble(year_planted = 2020:2030) #creating a tibble containing the years I want to model
+
+prediction_vty_acer <- broom::augment(model_vty_acer, newdata = futur_vty_acer, interval = "prediction") #use the augment function of broom package
+
 print(prediction_vty_acer)
 ```
-The fitted column correspond to the prediction of the diameter for each year depending on the model obtained before. 
+We can see in the prediction that, after 2027, the values for diameter are negative, which is not possible. Thus, the model I chose to predict the diameter in the future years is not accurate (it is not a linear model). 
 <!----------------------------------------------------------------------------->
 
 
@@ -203,8 +205,8 @@ finalversion_vancouver_trees <- vancouver_trees %>%
   arrange(genus_name, year_planted)%>% #re-ordering the data
   drop_na() #keeping only the rows without NA
 
-dir.create(here::here("output"))
-write_csv(finalversion_vancouver_trees, here::here("output/finalversion_vancouver_trees.csv"))
+dir.create(here::here("output")) #create the output folder
+write_csv(finalversion_vancouver_trees, here::here("output/finalversion_vancouver_trees.csv"))#writing the file into the output folder
 ```
 <!----------------------------------------------------------------------------->
 
@@ -215,7 +217,10 @@ Write your model object from Exercise 2 to an R binary file (an RDS), and load i
 - The same robustness and reproducibility criteria as in 3.1 apply here.
 
 <!-------------------------- Start your work below ---------------------------->
-
+```{r}
+saveRDS(model_vty_acer, file = here::here("output/model_vty_acer.rds")) #write RDS file for the model
+readRDS(here::here("output/model_vty_acer.rds")) #reading the RDS file for the model
+```
 
 <!----------------------------------------------------------------------------->
 
