@@ -1,6 +1,6 @@
 ---
 title: "Mini Data-Analysis Deliverable 3"
-author: "Mathias "
+author: "Mathias Delhaye"
 output: github_document
 ---
 

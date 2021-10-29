@@ -1,6 +1,6 @@
 Mini Data-Analysis Deliverable 3
 ================
-Mathias
+Mathias Delhaye
 
 # Welcome to your last milestone in your mini data analysis project!
 
@@ -373,6 +373,13 @@ finalversion_vancouver_trees <- vancouver_trees %>%
   drop_na() #keeping only the rows without NA
 
 dir.create(here::here("output")) #create the output folder
+```
+
+    ## Warning in dir.create(here::here("output")): '/Users/Mathias/Documents/PhD/
+    ## Courses/STAT 545/Mini_data_analysis/mathias_mini_data_analysis/output' already
+    ## exists
+
+``` r
 write_csv(finalversion_vancouver_trees, here::here("output/finalversion_vancouver_trees.csv"))#writing the file into the output folder
 ```
 
