@@ -52,13 +52,23 @@ For this exercise, you'll be choosing two of the three tasks below -- both tasks
 But first, tasks 1 and 2 below ask you to modify a plot you made in a previous milestone. The plot you choose should involve plotting across at least three groups (whether by facetting, or using an aesthetic like colour). Place this plot below (you're allowed to modify the plot if you'd like). If you don't have such a plot, you'll need to make one. Place the code for your plot below.
 
 <!-------------------------- Start your work below ---------------------------->
-```{r}
-vancouver_trees%>%
-  filter(genus_name %in% c("ABIES", "AMELANCHIER", "ALNUS","ACER", "ARAUCARIA", "ARBUTUS", "ARALIA", "ALBIZIA", "AILANTHUS"))%>%
-  ggplot(aes(x = diameter))+
-  geom_density(aes(fill = genus_name), alpha = 0.3)+
-  scale_x_log10()
 
+In the milestone 2, I created a new tibble based on the original *vancouver_trees*, called *vancouver_trees_year*, in which I added a column containing only the year when each tree was planted. I am going to use it to plot the number of trees planted for each genus in 1998 as it is the year with the highest number of trees planted. 
+
+```{r}
+vancouver_trees_year <- vancouver_trees%>%
+  mutate(year_planted = format(date_planted, "%Y"))
+
+vancouver_trees_year%>%
+  filter(year_planted == 1998)%>%
+  group_by(genus_name)%>%
+  summarise(n = n())%>%
+  drop_na()%>%
+  ggplot(aes(genus_name,n)) +
+  geom_point() +
+  theme(axis.text.y = element_text(size = 6)) +
+  coord_flip() +
+  labs(x = "", y = "Number of trees planted", title = "Genus trees, 1998")
 ```
 <!----------------------------------------------------------------------------->
 
@@ -68,34 +78,46 @@ Now, choose two of the following tasks.
 
 2. Produce a new plot that groups some factor levels together into an "other" category (or something similar), using the `forcats` package (3 points). Then, in a sentence or two, briefly explain why you chose this grouping (1 point here for demonstrating understanding of the grouping, and 1 point for demonstrating some justification for the grouping, which could be subtle or speculative.)
 
+<!-------------------------- Start your work below ---------------------------->
+
+**Task Number**: 1
+```{r}
+vancouver_trees_year%>%
+  filter(year_planted == 1998)%>%
+  group_by(genus_name)%>%
+  summarise(n = n())%>%
+  drop_na()%>%
+  mutate(genus_name = fct_reorder(genus_name, n))%>%
+  ggplot(aes(genus_name,n)) +
+  theme(axis.text.y = element_text(size = 6)) +
+  geom_point() +
+  coord_flip() +
+  labs(x = "", y = "Number of trees planted", title = "Genus trees, 1998")
+  
+```
+In this plot, I reordered the genus of the trees depending on the number of trees planted, allowing to have a better visualization of which genus was the most planted in 1998. 
+<!----------------------------------------------------------------------------->
+
 3. If your data has some sort of time-based column like a date (but something more granular than just a year):
     1. Make a new column that uses a function from the `lubridate` or `tsibble` package to modify your original time-based column. (3 points)
         - Note that you might first have to _make_ a time-based column using a function like `ymd()`, but this doesn't count.
         - Examples of something you might do here: extract the day of the year from a date, or extract the weekday, or let 24 hours elapse on your dates.
     2. Then, in a sentence or two, explain how your new column might be useful in exploring a research question. (1 point for demonstrating understanding of the function you used, and 1 point for your justification, which could be subtle or speculative).
         - For example, you could say something like "Investigating the day of the week might be insightful because penguins don't work on weekends, and so may respond differently".
-    
-
-
-<!-------------------------- Start your work below ---------------------------->
-
-**Task Number**: FILL_THIS_IN
-
-```{r}
-library(lubridate)
-vancouver_trees%>%
-  
-
-```
-<!----------------------------------------------------------------------------->
-
-
+        
 <!-------------------------- Start your work below ---------------------------->
 
 **Task Number**: 3
 
+```{r}
+library(lubridate)
+vancouver_trees_month <- vancouver_trees%>%
+  mutate(month_planted = month(date_planted))
+vancouver_trees_month$month_name <- month.name[vancouver_trees_month$month_planted]
+glimpse(vancouver_trees_month)
+```
 
-
+Here I used the function *month* from the *lubridate* package, with the mutate function, to add a column with the month (in number) when each tree was planted, and then I add another column with the name of the month. This new column can be useful to study when, during the year, the trees are usually planted in  Vancouver. 
 <!----------------------------------------------------------------------------->
 
     
@@ -108,9 +130,9 @@ Pick a research question, and pick a variable of interest (we'll call it "Y") th
 
 <!-------------------------- Start your work below ---------------------------->
 
-**Research Question**: FILL_THIS_IN
+**Research Question**: Is there an evolution of the physiological properties of the trees (diameter and height), depending on the year? Are these properties related to any other variables of the tibble?
 
-**Variable of interest**: FILL_THIS_IN
+**Variable of interest**: diameter
 
 <!----------------------------------------------------------------------------->
 
@@ -124,8 +146,21 @@ Fit a model or run a hypothesis test that provides insight on this variable with
     - You could use `lm()` to test for significance of regression.
 
 <!-------------------------- Start your work below ---------------------------->
+```{r}
+vty_acer <- vancouver_trees_year%>%
+  group_by(genus_name, year_planted)%>% #grouping by the genus and the year
+  filter(genus_name == "ACER")%>% #keep only ACER trees
+  drop_na()%>% #drop any NA
+  summarise(mean_diameter = mean(diameter))#calculating mean diameter for each year
+#print(vty_acer)
 
+vty_acer$year_planted <- as.numeric(vty_acer$year_planted)
 
+model_vty_acer <- lm(mean_diameter ~ I(year_planted-1989), vty_acer)
+
+print(model_vty_acer)
+
+```
 <!----------------------------------------------------------------------------->
 
 ## 2.2 (5 points)
@@ -137,10 +172,15 @@ Produce something relevant from your fitted model: either predictions on Y, or a
 - Obtain your results using the `broom` package if possible. If your model is not compatible with the broom function you're needing, then you can obtain your results by some other means, but first indicate which broom function is not compatible. 
   
 <!-------------------------- Start your work below ---------------------------->
+I want to predict the mean_diameter of the ACER trees that are going to be potentially planted in the future, using the fitted model obtained above.
 
-
+```{r}
+prediction_vty_acer <- broom::augment(model_vty_acer) #use the augment function of broom package
+broom::
+print(prediction_vty_acer)
+```
+The fitted column correspond to the prediction of the diameter for each year depending on the model obtained before. 
 <!----------------------------------------------------------------------------->
-
 
 
 # Exercise 3: Reading and writing data
@@ -155,8 +195,17 @@ Take a summary table that you made from Milestone 2 (Exercise 1.2), and write it
 - **Reproducibility criteria**: You should be able to delete the csv file, and remake it simply by knitting this Rmd file. 
   
 <!-------------------------- Start your work below ---------------------------->
+```{r}
+library(here)
+finalversion_vancouver_trees <- vancouver_trees %>%
+  select(tree_id, genus_name, neighbourhood_name, height_range_id, diameter, date_planted) %>% #keeping only the data that are interesting
+  mutate(year_planted = format(date_planted, "%Y"))%>% #adding the year planted
+  arrange(genus_name, year_planted)%>% #re-ordering the data
+  drop_na() #keeping only the rows without NA
 
-
+dir.create(here::here("output"))
+write_csv(finalversion_vancouver_trees, here::here("output/finalversion_vancouver_trees.csv"))
+```
 <!----------------------------------------------------------------------------->
 
 ## 3.2 (5 points)
